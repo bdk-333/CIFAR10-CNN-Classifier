@@ -119,68 +119,49 @@ The network processes images through the following stages:
 - **Convolutional Layers**: 3,438 parameters (1.7%)
 - **Fully Connected Layers**: 197,510 parameters (98.3%)
 
-## Key Design Features
+## Training Loop:
 
-### Architectural Choices
-- **Progressive Channel Increase**: Features become more abstract at deeper layers
-- **Spatial Dimension Reduction**: Focuses on important features while reducing computation
-- **Same Padding**: Preserves spatial dimensions before pooling
-- **ReLU Activation**: Introduces non-linearity and prevents vanishing gradients
-
-### Regularization Techniques
-- **Dropout**: 50% dropout in FC1 layer prevents overfitting
-- **MaxPooling**: Provides translation invariance and reduces parameters
-
-### Optimization Considerations
-- **Parameter Efficiency**: Majority of parameters are in FC layers
-- **Feature Hierarchy**: Convolutional layers extract low-to-high level features
-- **Computational Efficiency**: Small network suitable for CIFAR-10's 32×32 images
-
-## Forward Pass Example
-
-```python
-# Input: batch_size=64, channels=3, height=32, width=32
-x = torch.randn(64, 3, 32, 32)
-
-# Conv1 Block: (64, 3, 32, 32) → (64, 6, 16, 16)
-x = self.conv1(x)
-
-# Conv2 Block: (64, 6, 16, 16) → (64, 12, 8, 8)
-x = self.conv2(x)
-
-# Conv3 Block: (64, 12, 8, 8) → (64, 24, 4, 4)
-x = self.conv3(x)
-
-# Flatten: (64, 24, 4, 4) → (64, 384)
-x = x.view(-1, 24*4*4)
-
-# FC layers: (64, 384) → (64, 10)
-x = self.fct1(x)
-
-# Output: (64, 10) - logits for 10 classes
+```
+Starting training...
+Epoch [1/20], Loss: 1.6785, Train Accuracy: 38.21%, Val Accuracy: 48.12%
+Epoch [2/20], Loss: 1.3843, Train Accuracy: 50.24%, Val Accuracy: 53.34%
+Epoch [3/20], Loss: 1.2635, Train Accuracy: 54.69%, Val Accuracy: 57.70%
+Epoch [4/20], Loss: 1.1718, Train Accuracy: 58.28%, Val Accuracy: 61.10%
+Epoch [5/20], Loss: 1.1051, Train Accuracy: 60.52%, Val Accuracy: 62.79%
+Epoch [6/20], Loss: 1.0572, Train Accuracy: 62.30%, Val Accuracy: 64.23%
+Epoch [7/20], Loss: 1.0083, Train Accuracy: 64.17%, Val Accuracy: 65.33%
+Epoch [8/20], Loss: 0.9792, Train Accuracy: 65.50%, Val Accuracy: 65.59%
+Epoch [9/20], Loss: 0.9486, Train Accuracy: 66.39%, Val Accuracy: 65.62%
+Epoch [10/20], Loss: 0.9172, Train Accuracy: 67.50%, Val Accuracy: 67.49%
+Epoch [11/20], Loss: 0.8971, Train Accuracy: 68.09%, Val Accuracy: 67.48%
+Epoch [12/20], Loss: 0.8746, Train Accuracy: 69.06%, Val Accuracy: 67.64%
+Epoch [13/20], Loss: 0.8498, Train Accuracy: 69.86%, Val Accuracy: 68.12%
+Epoch [14/20], Loss: 0.8308, Train Accuracy: 70.32%, Val Accuracy: 69.08%
+Epoch [15/20], Loss: 0.8122, Train Accuracy: 71.16%, Val Accuracy: 69.31%
+Epoch [16/20], Loss: 0.7977, Train Accuracy: 71.70%, Val Accuracy: 68.55%
+Epoch [17/20], Loss: 0.7834, Train Accuracy: 72.04%, Val Accuracy: 69.36%
+Epoch [18/20], Loss: 0.7696, Train Accuracy: 72.58%, Val Accuracy: 69.04%
+Epoch [19/20], Loss: 0.7597, Train Accuracy: 72.95%, Val Accuracy: 69.79%
+Epoch [20/20], Loss: 0.7411, Train Accuracy: 73.48%, Val Accuracy: 69.87%
+Training completed!
 ```
 
-## Usage
+### Training vs Validation Accuracy:
 
-```python
-# Initialize the model
-model = CIFAR_CNN()
+![Train vs Test Acc](image-1.png)
 
-# Check total parameters
-total_params = sum(p.numel() for p in model.parameters())
-trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+### Per Class Accuracy on Test Data:
 
-print(f"Total parameters: {total_params:,}")
-print(f"Trainable parameters: {trainable_params:,}")
 ```
-
-## Model Summary
-
-- **Task**: Multi-class image classification (CIFAR-10)
-- **Input**: 32×32×3 RGB images
-- **Output**: 10-class probability distribution
-- **Architecture**: 3 Conv blocks + 2 FC layers
-- **Total Parameters**: 200,948
-- **Key Features**: Progressive feature extraction, dropout regularization, efficient design
-
-This architecture balances model complexity with performance, making it suitable for the CIFAR-10 dataset while maintaining computational efficiency.
+--- Per-Class Accuracy ---
+Accuracy of plane     : 74.10 %
+Accuracy of car       : 78.90 %
+Accuracy of bird      : 58.40 %
+Accuracy of cat       : 53.60 %
+Accuracy of deer      : 69.60 %
+Accuracy of dog       : 58.20 %
+Accuracy of frog      : 74.90 %
+Accuracy of horse     : 76.00 %
+Accuracy of ship      : 75.60 %
+Accuracy of truck     : 79.40 %
+```
